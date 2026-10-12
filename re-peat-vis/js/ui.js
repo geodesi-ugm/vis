@@ -5,6 +5,7 @@ import {st,BASE} from './model.js';
 import {scenes} from './scenes.js';
 import {resetView} from './camera.js';
 import {kompartemen} from './water.js';
+import {setTip} from './i18n.js';
 
 let toastT=0;
 function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('on');toastT=4.2;}
@@ -27,7 +28,7 @@ $('btnKomp').onclick=toggleKomp;
 function toggleWell(){const d=$('wellDock');d.hidden=!d.hidden;$('btnWell').setAttribute('aria-pressed',!d.hidden);}
 $('btnWell').onclick=toggleWell;
 function toggleCard(force){const c=$('card');const min=force!==undefined?force:!c.classList.contains('min');c.classList.toggle('min',min);
-  $('btnPanel').setAttribute('aria-expanded',!min);document.querySelectorAll('[data-collapse]').forEach(b=>b.setAttribute('aria-label',min?'Bentangkan panel':'Ciutkan panel'));}
+  $('btnPanel').setAttribute('aria-expanded',!min);document.querySelectorAll('[data-collapse]').forEach(b=>{b.dataset.i18nTip=min?'panel.expand':'panel.collapse';setTip(b,b.dataset.i18nTip);});}
 $('btnPanel').onclick=()=>toggleCard();
 document.querySelectorAll('[data-collapse]').forEach(b=>b.onclick=()=>toggleCard());
 if(window.innerWidth<=640){$('legendDock').hidden=true;$('btnLegend').setAttribute('aria-expanded','false');}

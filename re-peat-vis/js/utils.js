@@ -1,10 +1,11 @@
 // Small shared helpers: math, formatting, seeded RNG, camera preset constructor.
+import {getLang} from './i18n.js';
 export const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 export const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 export const lerp=(a,b,t)=>a+(b-a)*t;
 export const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
 export const smooth=(a,b,x)=>{const t=clamp((x-a)/(b-a),0,1);return t*t*(3-2*t);};
-export const fmt=(v,d)=>v.toFixed(d).replace('.',',');
+export const fmt=(v,d)=>{const s=v.toFixed(d);return getLang()==='id'?s.replace('.',','):s;};
 
 export function rng(seed){return function(){seed=(seed*16807)%2147483647;return (seed-1)/2147483646;};}
 // One seeded stream shared by every module that scatters things (vegetation, fires, rain, ET).

@@ -8,14 +8,19 @@ import {cam,camCtl} from './camera.js';
 import {kpiNow,allIn} from './terrain.js';
 import {showPanel,syncCutUI} from './ui.js';
 import {enterSandbox} from './sandbox.js';
+import {t,onLang} from './i18n.js';
 
 const cmpRes={};
 const dots=$('dots');
-scenes.forEach((s,i)=>{const b=document.createElement('button');b.textContent=i+1;b.setAttribute('aria-label','Adegan '+(i+1)+': '+s.title);b.onclick=()=>enter(i);dots.appendChild(b);});
+scenes.forEach((s,i)=>{const b=document.createElement('button');b.textContent=i+1;b.onclick=()=>enter(i);dots.appendChild(b);});
+// Fill the scene texts in the current language without restarting the scene.
+function renderScene(){const i=app.sceneIdx,s=scenes[i];
+  $('stepTxt').textContent=t('story.step',{i:i+1,n:scenes.length});$('title').textContent=t(s.title);$('narr').textContent=t(s.narr);
+  [...dots.children].forEach((b,k)=>{b.setAttribute('aria-label',t('story.dot',{i:k+1,title:t(scenes[k].title)}));if(k===i)b.setAttribute('aria-current','step');else b.removeAttribute('aria-current');});
+  $('next').textContent=t(i===scenes.length-1?'story.try':'story.next');}
+onLang(()=>{if(app.mode==='story')renderScene();});
 function enter(i){app.mode='story';showPanel('story');app.sceneIdx=i;const s=scenes[i];Object.assign(st,BASE,s.start);app.elapsed=reduceMotion?999:0;camCtl.user=false;camCtl.from={...cam};camCtl.goal=null;app.cutOverride=null;
-  $('stepTxt').textContent='Adegan '+(i+1)+' dari '+scenes.length;$('title').textContent=s.title;$('narr').textContent=s.narr;
-  [...dots.children].forEach((b,k)=>{if(k===i)b.setAttribute('aria-current','step');else b.removeAttribute('aria-current');});
-  $('prev').disabled=i===0;$('next').textContent=i===scenes.length-1?'Coba tantangan':'Berikutnya';
+  renderScene();$('prev').disabled=i===0;
   $('legTma').hidden=i===5;$('legStrat').hidden=i!==5;$('cmp').hidden=i!==6;$('cmp').textContent='';
   if(i===6){const keep=Object.assign({},st);const ka=blockAct.slice();blockAct.fill(1);
     Object.assign(st,BASE,{color:1,pB:1,gate:1,front:1,t:90,k:0.6});setDerived();cmpRes.n=kpiNow(allIn);
